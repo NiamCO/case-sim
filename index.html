@@ -1,0 +1,251 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Minecraft Case Simulator</title>
+  <link rel="stylesheet" href="styles.css">
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700;800&display=swap" rel="stylesheet">
+</head>
+<body>
+  <!-- Login Screen -->
+  <div id="login-screen" class="login-screen">
+    <div class="login-container">
+      <div class="login-box">
+        <h1 class="login-title">MINECRAFT CASE SIMULATOR</h1>
+        <div class="login-subtitle">Login to your account</div>
+        
+        <div id="login-form" class="auth-form">
+          <input type="text" id="login-username" placeholder="Username" class="auth-input">
+          <input type="password" id="login-password" placeholder="Password" class="auth-input">
+          <button onclick="login()" class="auth-button">LOGIN</button>
+          <div class="auth-switch">
+            Don't have an account? <span onclick="showSignup()">Sign up</span>
+          </div>
+        </div>
+
+        <div id="signup-form" class="auth-form" style="display: none;">
+          <input type="text" id="signup-username" placeholder="Username" class="auth-input">
+          <input type="password" id="signup-password" placeholder="Password" class="auth-input">
+          <input type="password" id="signup-confirm" placeholder="Confirm Password" class="auth-input">
+          <button onclick="signup()" class="auth-button">SIGN UP</button>
+          <div class="auth-switch">
+            Already have an account? <span onclick="showLogin()">Login</span>
+          </div>
+        </div>
+
+        <div id="auth-error" class="auth-error"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Main App -->
+  <div id="main-app" style="display: none;">
+    <!-- Top Bar -->
+    <div class="top-bar">
+      <div class="nav-tabs">
+        <button class="nav-tab active" onclick="switchTab('cases')">CASES</button>
+        <button class="nav-tab" onclick="switchTab('inventory')">INVENTORY</button>
+        <button class="nav-tab" onclick="switchTab('shop')">🛍️ SHOP</button>
+        <button class="nav-tab" onclick="switchTab('upgrades')">⚒️ UPGRADES</button>
+        <button class="nav-tab" onclick="switchTab('leaderboard')">🏆 LEADERBOARD</button>
+      </div>
+
+      <div class="top-bar-right">
+        <button id="daily-reward-btn" onclick="claimDaily()" class="daily-btn" style="display: none;">
+          ▶ $<span id="daily-amount">100</span> FREE
+        </button>
+        
+        <button class="luck-btn" onclick="playSound('button')">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="black">
+            <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
+          </svg>
+        </button>
+
+        <div class="money-display">${<span id="money">0</span>}</div>
+
+        <div class="user-profile" onclick="showStats()">
+          <div class="user-avatar">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="white">
+              <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/>
+            </svg>
+          </div>
+          <span id="username-display">Player</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Cases Tab -->
+    <div id="cases-tab" class="tab-content active">
+      <div id="cases-grid" class="cases-grid"></div>
+    </div>
+
+    <!-- Case View (when a case is selected) -->
+    <div id="case-view" class="case-view" style="display: none;">
+      <button class="back-btn" onclick="closeCaseView()">← BACK</button>
+      <h2 id="case-title" class="case-title"></h2>
+      
+      <div class="case-preview">
+        <div class="preview-pointer"></div>
+        <div id="case-items-preview" class="case-items-preview"></div>
+      </div>
+
+      <button id="open-case-btn" class="open-case-btn" onclick="openCase()">
+        OPEN ($<span id="case-price">0</span>)
+      </button>
+    </div>
+
+    <!-- Spinning Screen -->
+    <div id="spin-screen" class="spin-screen" style="display: none;">
+      <h2 id="spin-title" class="spin-title"></h2>
+      <div class="spin-container">
+        <div class="spin-pointer"></div>
+        <div id="spin-items" class="spin-items"></div>
+      </div>
+    </div>
+
+    <!-- Win Screen -->
+    <div id="win-screen" class="win-screen" style="display: none;">
+      <div class="win-overlay"></div>
+      <div class="win-content">
+        <div class="win-glow"></div>
+        <h1 class="win-text">YOU WON!</h1>
+        <div class="win-value">$<span id="win-value">0</span></div>
+        <div id="win-item" class="win-item"></div>
+        <div class="win-name" id="win-name"></div>
+        <div class="durability-bar">
+          <div id="win-durability-fill" class="durability-fill"></div>
+        </div>
+        <div class="durability-text">Durability: <span id="win-durability">100</span>%</div>
+        <button class="win-ok-btn" onclick="closeWinScreen()">OK</button>
+      </div>
+    </div>
+
+    <!-- Inventory Tab -->
+    <div id="inventory-tab" class="tab-content">
+      <div class="inventory-header">
+        <div class="inventory-count">Items: <span id="inventory-count">0</span></div>
+        <button id="sell-btn" class="sell-btn" onclick="sellItems()" style="display: none;">
+          SELL ($<span id="sell-amount">0</span>)
+        </button>
+      </div>
+      <div id="inventory-grid" class="inventory-grid"></div>
+      <div id="inventory-empty" class="empty-message">
+        Your inventory is empty. Open some cases!
+      </div>
+    </div>
+
+    <!-- Shop Tab -->
+    <div id="shop-tab" class="tab-content">
+      <div class="shop-header">
+        <h2>DAILY SHOP</h2>
+        <p>Items refresh every day</p>
+      </div>
+      <div id="shop-grid" class="shop-grid"></div>
+    </div>
+
+    <!-- Upgrades Tab -->
+    <div id="upgrades-tab" class="tab-content">
+      <div class="upgrades-container">
+        <h2 class="upgrades-title">ITEM UPGRADER</h2>
+        <p class="upgrades-subtitle">Combine items to upgrade their rarity</p>
+        
+        <div class="crafting-area">
+          <div class="crafting-grid" id="crafting-grid">
+            <div class="craft-slot" data-slot="0"></div>
+            <div class="craft-slot" data-slot="1"></div>
+            <div class="craft-slot" data-slot="2"></div>
+            <div class="craft-slot" data-slot="3"></div>
+            <div class="craft-slot" data-slot="4"></div>
+            <div class="craft-slot" data-slot="5"></div>
+            <div class="craft-slot" data-slot="6"></div>
+            <div class="craft-slot" data-slot="7"></div>
+            <div class="craft-slot" data-slot="8"></div>
+          </div>
+
+          <div class="upgrade-arrow">→</div>
+
+          <div class="upgrade-result">
+            <div class="result-box" id="upgrade-result">
+              <div class="result-placeholder">?</div>
+            </div>
+            <div class="success-chance">
+              Success: <span id="success-rate">0</span>%
+            </div>
+            <button class="upgrade-btn" onclick="attemptUpgrade()" disabled id="upgrade-btn">
+              UPGRADE
+            </button>
+          </div>
+        </div>
+
+        <div class="upgrade-inventory">
+          <h3>Your Items</h3>
+          <div id="upgrade-inventory-grid" class="upgrade-inventory-grid"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Leaderboard Tab -->
+    <div id="leaderboard-tab" class="tab-content">
+      <div class="leaderboard-header">
+        <h2>🏆 LEADERBOARD</h2>
+        <div class="leaderboard-filters">
+          <button class="filter-btn active" onclick="filterLeaderboard('value')">Total Value</button>
+          <button class="filter-btn" onclick="filterLeaderboard('money')">Money</button>
+          <button class="filter-btn" onclick="filterLeaderboard('cases')">Cases Opened</button>
+        </div>
+      </div>
+      <div id="leaderboard-list" class="leaderboard-list"></div>
+    </div>
+
+    <!-- Stats Modal -->
+    <div id="stats-modal" class="modal" style="display: none;">
+      <div class="modal-overlay" onclick="closeStats()"></div>
+      <div class="modal-content">
+        <button class="modal-close" onclick="closeStats()">×</button>
+        <h2 class="modal-title">YOUR STATS</h2>
+        
+        <div class="stats-grid">
+          <div class="stat-card">
+            <div class="stat-label">Total Cases Opened</div>
+            <div class="stat-value" id="stat-cases">0</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-label">Total Spent</div>
+            <div class="stat-value">$<span id="stat-spent">0</span></div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-label">Total Earned</div>
+            <div class="stat-value">$<span id="stat-earned">0</span></div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-label">Daily Streak</div>
+            <div class="stat-value" id="stat-streak">0</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-label">Inventory Value</div>
+            <div class="stat-value">$<span id="stat-inv-value">0</span></div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-label">Best Item Won</div>
+            <div class="stat-value" id="stat-best-item">None</div>
+          </div>
+        </div>
+
+        <button class="logout-btn" onclick="logout()">LOGOUT</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Audio Elements -->
+  <audio id="audio-spin" src="media/spin.webm"></audio>
+  <audio id="audio-opened" src="media/caseopened.webm"></audio>
+  <audio id="audio-button" src="media/buttonclicked.webm"></audio>
+  <audio id="audio-select" src="media/itemselected.webm"></audio>
+  <audio id="audio-sold" src="media/itemssold.webm"></audio>
+
+  <!-- Supabase -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="script.js"></script>
+</body>
+</html>
