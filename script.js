@@ -2,7 +2,12 @@
 const SUPABASE_URL = 'https://zavxywrocjrnuzqchjaz.supabase.co';
 const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inphdnh5d3JvY2pybnV6cWNoamF6Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzM3ODM3MzUsImV4cCI6MjA4OTM1OTczNX0.1xOya_AA0VXbM-6Vj-6TTeoMVwc3P3g7TmCMyQFhKCs';
 
-const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+let supabase;
+
+// Initialize Supabase
+if (typeof window !== 'undefined' && window.supabase) {
+  supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+}
 
 // Global State
 let currentUser = null;
@@ -364,19 +369,19 @@ const CASES = [
 ];
 
 // Auth Functions
-function showSignup() {
+window.showSignup = function() {
   document.getElementById('login-form').style.display = 'none';
   document.getElementById('signup-form').style.display = 'flex';
   document.getElementById('auth-error').textContent = '';
 }
 
-function showLogin() {
+window.showLogin = function() {
   document.getElementById('signup-form').style.display = 'none';
   document.getElementById('login-form').style.display = 'flex';
   document.getElementById('auth-error').textContent = '';
 }
 
-async function signup() {
+window.signup = async function() {
   const username = document.getElementById('signup-username').value.trim();
   const password = document.getElementById('signup-password').value;
   const confirm = document.getElementById('signup-confirm').value;
@@ -429,7 +434,7 @@ async function signup() {
   }
 }
 
-async function login() {
+window.login = async function() {
   const username = document.getElementById('login-username').value.trim();
   const password = document.getElementById('login-password').value;
   const errorEl = document.getElementById('auth-error');
@@ -455,7 +460,7 @@ async function login() {
   }
 }
 
-async function logout() {
+window.logout = async function() {
   await supabase.auth.signOut();
   location.reload();
 }
@@ -535,7 +540,7 @@ function updateMoney() {
   document.getElementById('money').textContent = formatMoney(playerData.money);
 }
 
-function playSound(type) {
+window.playSound = function(type) {
   const audio = document.getElementById(`audio-${type}`);
   if (audio) {
     audio.currentTime = 0;
@@ -555,7 +560,7 @@ function selectRandomItem(caseData) {
 }
 
 // Tab Switching
-function switchTab(tab) {
+window.switchTab = function(tab) {
   document.querySelectorAll('.nav-tab').forEach(btn => btn.classList.remove('active'));
   document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
   
@@ -579,7 +584,7 @@ function checkDailyReward() {
   }
 }
 
-async function claimDaily() {
+window.claimDaily = async function() {
   const today = new Date().toDateString();
   if (playerData.lastDailyClaim === today) return;
   
@@ -644,7 +649,7 @@ function renderShop() {
   });
 }
 
-async function buyShopItem(index) {
+window.buyShopItem = async function(index) {
   const item = playerData.shopItems[index];
   if (playerData.money < item.shopPrice) return;
   
@@ -715,14 +720,14 @@ function selectCaseView(caseItem) {
   btn.disabled = playerData.money < caseItem.price;
 }
 
-function closeCaseView() {
+window.closeCaseView = function() {
   playSound('button');
   document.getElementById('case-view').style.display = 'none';
   document.getElementById('cases-tab').style.display = 'block';
   selectedCase = null;
 }
 
-async function openCase() {
+window.openCase = async function() {
   if (!selectedCase || playerData.money < selectedCase.price) return;
   
   playSound('button');
@@ -816,7 +821,7 @@ function showWinScreen(item) {
   }
 }
 
-function closeWinScreen() {
+window.closeWinScreen = function() {
   playSound('button');
   document.getElementById('win-screen').style.display = 'none';
   document.getElementById('cases-tab').style.display = 'block';
@@ -887,7 +892,7 @@ function updateSellButton() {
   }
 }
 
-async function sellItems() {
+window.sellItems = async function() {
   if (selectedInventoryItems.length === 0) return;
   
   playSound('sold');
@@ -957,7 +962,7 @@ function renderCraftingGrid() {
   });
 }
 
-function removeFromCrafting(index) {
+window.removeFromCrafting = function(index) {
   event.stopPropagation();
   const item = craftingSlots[index];
   if (!item) return;
@@ -989,7 +994,7 @@ function calculateUpgradeChance() {
   btn.disabled = false;
 }
 
-async function attemptUpgrade() {
+window.attemptUpgrade = async function() {
   const filledSlots = craftingSlots.filter(s => s !== null);
   if (filledSlots.length === 0) return;
   
@@ -1084,7 +1089,7 @@ function renderLeaderboard(data, sortBy) {
   });
 }
 
-async function filterLeaderboard(type) {
+window.filterLeaderboard = async function(type) {
   currentLeaderboardFilter = type;
   
   document.querySelectorAll('.filter-btn').forEach(btn => btn.classList.remove('active'));
@@ -1094,7 +1099,7 @@ async function filterLeaderboard(type) {
 }
 
 // Stats Modal
-function showStats() {
+window.showStats = function() {
   playSound('button');
   document.getElementById('stats-modal').style.display = 'flex';
   
@@ -1108,7 +1113,7 @@ function showStats() {
   document.getElementById('stat-best-item').textContent = playerData.bestItemWon?.name || 'None';
 }
 
-function closeStats() {
+window.closeStats = function() {
   playSound('button');
   document.getElementById('stats-modal').style.display = 'none';
 }
