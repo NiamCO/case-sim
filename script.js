@@ -1,13 +1,11 @@
+// Wait for DOM and Supabase to load
+document.addEventListener('DOMContentLoaded', function() {
+
 // Supabase Configuration
 const SUPABASE_URL = 'https://zavxywrocjrnuzqchjaz.supabase.co';
 const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inphdnh5d3JvY2pybnV6cWNoamF6Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzM3ODM3MzUsImV4cCI6MjA4OTM1OTczNX0.1xOya_AA0VXbM-6Vj-6TTeoMVwc3P3g7TmCMyQFhKCs';
 
-let supabase;
-
-// Initialize Supabase
-if (typeof window !== 'undefined' && window.supabase) {
-  supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
-}
+const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
 // Global State
 let currentUser = null;
@@ -19,7 +17,7 @@ let playerData = {
   totalSpent: 0,
   totalEarned: 0,
   dailyStreak: 1,
-  lastDailyClam: null,
+  lastDailyClaim: null,
   shopItems: []
 };
 
@@ -53,7 +51,7 @@ window.resetProgress = async () => {
       totalSpent: 0,
       totalEarned: 0,
       dailyStreak: 1,
-      lastDailyClam: null,
+      lastDailyClaim: null,
       shopItems: []
     };
     await savePlayerData();
@@ -79,12 +77,12 @@ function createItemSVG(type, rarity, size = 80) {
   const svgTemplates = {
     sword: `<svg width="${size}" height="${size}" viewBox="0 0 100 100">
       <defs>
-        <linearGradient id="grad-${rarity}-sword" x1="0%" y1="0%" x2="100%" y2="100%">
+        <linearGradient id="grad-${rarity}-sword-${Date.now()}" x1="0%" y1="0%" x2="100%" y2="100%">
           <stop offset="0%" style="stop-color:${color};stop-opacity:1" />
           <stop offset="100%" style="stop-color:${bgColor};stop-opacity:1" />
         </linearGradient>
       </defs>
-      <rect x="45" y="10" width="10" height="60" fill="url(#grad-${rarity}-sword)" rx="2"/>
+      <rect x="45" y="10" width="10" height="60" fill="url(#grad-${rarity}-sword-${Date.now()})" rx="2"/>
       <rect x="35" y="65" width="30" height="8" fill="${color}" rx="2"/>
       <circle cx="50" cy="73" r="6" fill="${bgColor}"/>
       <rect x="48" y="75" width="4" height="15" fill="${color}" rx="2"/>
@@ -98,24 +96,24 @@ function createItemSVG(type, rarity, size = 80) {
     
     potion: `<svg width="${size}" height="${size}" viewBox="0 0 100 100">
       <defs>
-        <linearGradient id="grad-${rarity}-potion" x1="0%" y1="0%" x2="0%" y2="100%">
+        <linearGradient id="grad-${rarity}-potion-${Date.now()}" x1="0%" y1="0%" x2="0%" y2="100%">
           <stop offset="0%" style="stop-color:${color};stop-opacity:0.8" />
           <stop offset="100%" style="stop-color:${bgColor};stop-opacity:1" />
         </linearGradient>
       </defs>
-      <rect x="35" y="30" width="30" height="50" fill="url(#grad-${rarity}-potion)" rx="5"/>
+      <rect x="35" y="30" width="30" height="50" fill="url(#grad-${rarity}-potion-${Date.now()})" rx="5"/>
       <rect x="40" y="20" width="20" height="15" fill="${bgColor}" rx="2"/>
       <circle cx="50" cy="22" r="3" fill="${color}"/>
     </svg>`,
     
     armor: `<svg width="${size}" height="${size}" viewBox="0 0 100 100">
       <defs>
-        <linearGradient id="grad-${rarity}-armor" x1="0%" y1="0%" x2="100%" y2="100%">
+        <linearGradient id="grad-${rarity}-armor-${Date.now()}" x1="0%" y1="0%" x2="100%" y2="100%">
           <stop offset="0%" style="stop-color:${color};stop-opacity:0.6" />
           <stop offset="100%" style="stop-color:${bgColor};stop-opacity:1" />
         </linearGradient>
       </defs>
-      <path d="M 50 20 L 30 30 L 30 70 L 50 80 L 70 70 L 70 30 Z" fill="url(#grad-${rarity}-armor)" stroke="${color}" stroke-width="2"/>
+      <path d="M 50 20 L 30 30 L 30 70 L 50 80 L 70 70 L 70 30 Z" fill="url(#grad-${rarity}-armor-${Date.now()})" stroke="${color}" stroke-width="2"/>
       <circle cx="50" cy="45" r="8" fill="${bgColor}"/>
     </svg>`,
     
@@ -133,12 +131,12 @@ function createItemSVG(type, rarity, size = 80) {
     
     resource: `<svg width="${size}" height="${size}" viewBox="0 0 100 100">
       <defs>
-        <linearGradient id="grad-${rarity}-resource" x1="0%" y1="0%" x2="100%" y2="100%">
+        <linearGradient id="grad-${rarity}-resource-${Date.now()}" x1="0%" y1="0%" x2="100%" y2="100%">
           <stop offset="0%" style="stop-color:${color};stop-opacity:1" />
           <stop offset="100%" style="stop-color:${bgColor};stop-opacity:1" />
         </linearGradient>
       </defs>
-      <polygon points="50,15 65,35 85,40 67,57 72,78 50,67 28,78 33,57 15,40 35,35" fill="url(#grad-${rarity}-resource)" stroke="${color}" stroke-width="2"/>
+      <polygon points="50,15 65,35 85,40 67,57 72,78 50,67 28,78 33,57 15,40 35,35" fill="url(#grad-${rarity}-resource-${Date.now()})" stroke="${color}" stroke-width="2"/>
     </svg>`,
     
     music: `<svg width="${size}" height="${size}" viewBox="0 0 100 100">
@@ -403,7 +401,7 @@ window.signup = async function() {
   }
   
   try {
-    const { data, error } = await supabase.auth.signUp({
+    const { data, error } = await supabaseClient.auth.signUp({
       email: `${username}@minecraft-sim.com`,
       password: password,
     });
@@ -411,7 +409,7 @@ window.signup = async function() {
     if (error) throw error;
     
     // Create player data
-    const { error: dbError } = await supabase
+    const { error: dbError } = await supabaseClient
       .from('player_data')
       .insert([{
         id: data.user.id,
@@ -445,7 +443,7 @@ window.login = async function() {
   }
   
   try {
-    const { data, error } = await supabase.auth.signInWithPassword({
+    const { data, error } = await supabaseClient.auth.signInWithPassword({
       email: `${username}@minecraft-sim.com`,
       password: password,
     });
@@ -461,7 +459,7 @@ window.login = async function() {
 }
 
 window.logout = async function() {
-  await supabase.auth.signOut();
+  await supabaseClient.auth.signOut();
   location.reload();
 }
 
@@ -475,7 +473,7 @@ function showMainApp() {
 // Load and Save Player Data
 async function loadPlayerData() {
   try {
-    const { data, error } = await supabase
+    const { data, error } = await supabaseClient
       .from('player_data')
       .select('*')
       .eq('id', currentUser.id)
@@ -507,7 +505,7 @@ async function savePlayerData() {
   if (!currentUser) return;
   
   try {
-    const { error } = await supabase
+    const { error } = await supabaseClient
       .from('player_data')
       .update({
         money: playerData.money,
@@ -1038,7 +1036,7 @@ window.attemptUpgrade = async function() {
 // Leaderboard Functions
 async function loadLeaderboard() {
   try {
-    const { data, error } = await supabase
+    const { data, error } = await supabaseClient
       .from('leaderboard')
       .select('*')
       .order('inventory_value', { ascending: false })
@@ -1046,7 +1044,7 @@ async function loadLeaderboard() {
     
     if (error) throw error;
     
-    renderLeaderboard(data, 'value');
+    renderLeaderboard(data, currentLeaderboardFilter);
   } catch (error) {
     console.error('Error loading leaderboard:', error);
   }
@@ -1127,10 +1125,10 @@ async function initApp() {
 }
 
 // Check if already logged in
-supabase.auth.getSession().then(({ data: { session } }) => {
+supabaseClient.auth.getSession().then(({ data: { session } }) => {
   if (session) {
-    supabase.auth.getUser().then(async ({ data: { user } }) => {
-      const { data: playerInfo } = await supabase
+    supabaseClient.auth.getUser().then(async ({ data: { user } }) => {
+      const { data: playerInfo } = await supabaseClient
         .from('player_data')
         .select('username')
         .eq('id', user.id)
@@ -1147,3 +1145,5 @@ console.log('💰 Console Commands Available:');
 console.log('- giveMoney(amount) - Add money to your account');
 console.log('- setMoney(amount) - Set exact money amount');
 console.log('- resetProgress() - Reset all progress');
+
+}); // End of DOMContentLoaded
