@@ -4,8 +4,8 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Minecraft Case Simulator</title>
+  <link rel="icon" type="image/jpeg" href="faviconmine.jpg">
   <link rel="stylesheet" href="styles.css">
-  <link rel="icon" type="image/jpeg" href="faviconmine.png">
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700;800&display=swap" rel="stylesheet">
 </head>
 <body>
@@ -48,6 +48,7 @@
         <button class="nav-tab active" onclick="switchTab('cases')">CASES</button>
         <button class="nav-tab" onclick="switchTab('inventory')">INVENTORY</button>
         <button class="nav-tab" onclick="switchTab('shop')">🛍️ SHOP</button>
+        <button class="nav-tab" onclick="switchTab('slots')">🎰 SLOTS</button>
         <button class="nav-tab" onclick="switchTab('upgrades')">⚒️ UPGRADES</button>
         <button class="nav-tab" onclick="switchTab('leaderboard')">🏆 LEADERBOARD</button>
       </div>
@@ -63,7 +64,7 @@
           </svg>
         </button>
 
-        <div class="money-display">${<span id="money">0</span>}</div>
+        <div class="money-display"><span id="money">$0</span></div>
 
         <div class="user-profile" onclick="showStats()">
           <div class="user-avatar">
@@ -126,11 +127,21 @@
     <div id="inventory-tab" class="tab-content">
       <div class="inventory-header">
         <div class="inventory-count">Items: <span id="inventory-count">0</span></div>
-        <button id="sell-btn" class="sell-btn" onclick="sellItems()" style="display: none;">
-          SELL ($<span id="sell-amount">0</span>)
-        </button>
+        <div style="display: flex; gap: 12px;">
+          <button id="select-all-btn" class="select-all-btn" onclick="selectAllItems()" style="display: none;">
+            SELECT ALL
+          </button>
+          <button id="sell-btn" class="sell-btn" onclick="sellItems()" style="display: none;">
+            SELL ($<span id="sell-amount">0</span>)
+          </button>
+        </div>
       </div>
       <div id="inventory-grid" class="inventory-grid"></div>
+      <div id="inventory-pagination" class="pagination" style="display: none;">
+        <button class="page-btn" onclick="changeInventoryPage(-1)">← PREV</button>
+        <span id="inventory-page-info">Page 1 of 1</span>
+        <button class="page-btn" onclick="changeInventoryPage(1)">NEXT →</button>
+      </div>
       <div id="inventory-empty" class="empty-message">
         Your inventory is empty. Open some cases!
       </div>
@@ -143,6 +154,36 @@
         <p>Items refresh every day</p>
       </div>
       <div id="shop-grid" class="shop-grid"></div>
+    </div>
+
+    <!-- Slots Tab -->
+    <div id="slots-tab" class="tab-content">
+      <div class="slots-container">
+        <h2 class="slots-title">🎰 SLOT MACHINE</h2>
+        <p class="slots-subtitle">Spin to win rare items!</p>
+        
+        <div class="slots-machine">
+          <div class="slots-reels">
+            <div class="slot-reel" id="reel-1"></div>
+            <div class="slot-reel" id="reel-2"></div>
+            <div class="slot-reel" id="reel-3"></div>
+          </div>
+          <div class="slots-line"></div>
+        </div>
+
+        <div class="slots-controls">
+          <div class="bet-controls">
+            <button class="bet-btn" onclick="changeBet(-10)">-$10</button>
+            <div class="bet-display">BET: $<span id="slot-bet">10</span></div>
+            <button class="bet-btn" onclick="changeBet(10)">+$10</button>
+          </div>
+          <button class="spin-btn" onclick="spinSlots()" id="spin-slots-btn">
+            SPIN ($<span id="spin-cost">10</span>)
+          </button>
+        </div>
+
+        <div class="slots-result" id="slots-result"></div>
+      </div>
     </div>
 
     <!-- Upgrades Tab -->
@@ -202,35 +243,46 @@
     <!-- Stats Modal -->
     <div id="stats-modal" class="modal" style="display: none;">
       <div class="modal-overlay" onclick="closeStats()"></div>
-      <div class="modal-content">
+      <div class="modal-content modal-large">
         <button class="modal-close" onclick="closeStats()">×</button>
         <h2 class="modal-title">YOUR STATS</h2>
         
-        <div class="stats-grid">
-          <div class="stat-card">
-            <div class="stat-label">Total Cases Opened</div>
-            <div class="stat-value" id="stat-cases">0</div>
+        <div class="stats-tabs">
+          <button class="stat-tab active" onclick="switchStatTab('stats')">STATISTICS</button>
+          <button class="stat-tab" onclick="switchStatTab('achievements')">ACHIEVEMENTS</button>
+        </div>
+
+        <div id="stats-section" class="stat-section">
+          <div class="stats-grid">
+            <div class="stat-card">
+              <div class="stat-label">Total Cases Opened</div>
+              <div class="stat-value" id="stat-cases">0</div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-label">Total Spent</div>
+              <div class="stat-value">$<span id="stat-spent">0</span></div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-label">Total Earned</div>
+              <div class="stat-value">$<span id="stat-earned">0</span></div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-label">Daily Streak</div>
+              <div class="stat-value" id="stat-streak">0</div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-label">Inventory Value</div>
+              <div class="stat-value">$<span id="stat-inv-value">0</span></div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-label">Best Item Won</div>
+              <div class="stat-value" id="stat-best-item">None</div>
+            </div>
           </div>
-          <div class="stat-card">
-            <div class="stat-label">Total Spent</div>
-            <div class="stat-value">$<span id="stat-spent">0</span></div>
-          </div>
-          <div class="stat-card">
-            <div class="stat-label">Total Earned</div>
-            <div class="stat-value">$<span id="stat-earned">0</span></div>
-          </div>
-          <div class="stat-card">
-            <div class="stat-label">Daily Streak</div>
-            <div class="stat-value" id="stat-streak">0</div>
-          </div>
-          <div class="stat-card">
-            <div class="stat-label">Inventory Value</div>
-            <div class="stat-value">$<span id="stat-inv-value">0</span></div>
-          </div>
-          <div class="stat-card">
-            <div class="stat-label">Best Item Won</div>
-            <div class="stat-value" id="stat-best-item">None</div>
-          </div>
+        </div>
+
+        <div id="achievements-section" class="stat-section" style="display: none;">
+          <div id="achievements-grid" class="achievements-grid"></div>
         </div>
 
         <button class="logout-btn" onclick="logout()">LOGOUT</button>
