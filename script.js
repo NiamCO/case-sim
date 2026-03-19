@@ -440,17 +440,26 @@ const CASES = [
       { name: 'Divine Sword', rarity: 5, minPrice: 10000, maxPrice: 15000, weight: 30, type: 'sword' },
       { name: 'Divine Armor Set', rarity: 5, minPrice: 12000, maxPrice: 18000, weight: 20, type: 'armor' }
     ]
-  }
-];
-
-// I'll continue with 50 more cases in the next message due to file size limit...
-// For now, let me add the core functionality first
-
-console.log('🎉 *pats self on back* - You did good, Claude!');
-console.log('💰 Console Commands Available:');
-console.log('- giveMoney(amount) - Add money');
-console.log('- setMoney(amount) - Set exact money');
-console.log('- resetProgress() - Reset all');
+  },
+  // Case 11: TOOLS CASE
+  {
+    id: 'tools', name: 'TOOLS CASE', price: 75, image: 'images/toolscase.png',
+    items: [
+      { name: 'Wooden Pickaxe', rarity: 0, minPrice: 5, maxPrice: 10, weight: 900, type: 'tool' },
+      { name: 'Stone Pickaxe', rarity: 0, minPrice: 8, maxPrice: 15, weight: 800, type: 'tool' },
+      { name: 'Iron Pickaxe', rarity: 1, minPrice: 20, maxPrice: 35, weight: 600, type: 'tool' },
+      { name: 'Golden Pickaxe', rarity: 2, minPrice: 80, maxPrice: 150, weight: 300, type: 'tool' },
+      { name: 'Diamond Pickaxe', rarity: 3, minPrice: 500, maxPrice: 800, weight: 150, type: 'tool' },
+      { name: 'Netherite Pickaxe', rarity: 4, minPrice: 1800, maxPrice: 2500, weight: 50, type: 'tool' }
+    ]
+  },
+  // Case 12: GEMS CASE
+  {
+    id: 'gems', name: 'GEMS CASE', price: 200, image: 'images/gemscase.png',
+    items: [
+      { name: 'Quartz', rarity: 1, minPrice: 50, maxPrice: 100, weight: 700, type: 'gem' },
+      { name: 'Amethyst', rarity: 2, minPrice: 150, maxPrice: 300, weight: 500, type: 'gem' },
+      { name: 'Ruby', rarity: 3, minPrice: 400, maxPrice: 700, weight: 300, type: 'gem' },
 
 } // End of initializeApp
 
@@ -461,170 +470,173 @@ if (document.readyState === 'loading') {
   initializeApp();
 }
 
-// Adding 15 MORE AMAZING CASES (Total: 25 cases now)
 
-// Case 11: TOOLS CASE
-CASES.push({
-  id: 'tools', name: 'TOOLS CASE', price: 75, image: 'images/toolscase.png',
-  items: [
-    { name: 'Wooden Pickaxe', rarity: 0, minPrice: 5, maxPrice: 10, weight: 900, type: 'tool' },
-    { name: 'Stone Pickaxe', rarity: 0, minPrice: 8, maxPrice: 15, weight: 800, type: 'tool' },
-    { name: 'Iron Pickaxe', rarity: 1, minPrice: 20, maxPrice: 35, weight: 600, type: 'tool' },
-    { name: 'Golden Pickaxe', rarity: 2, minPrice: 80, maxPrice: 150, weight: 300, type: 'tool' },
-    { name: 'Diamond Pickaxe', rarity: 3, minPrice: 500, maxPrice: 800, weight: 150, type: 'tool' },
-    { name: 'Netherite Pickaxe', rarity: 4, minPrice: 1800, maxPrice: 2500, weight: 50, type: 'tool' }
-  ]
-});
+// Adding 15 MORE AMAZING CASES (Total: 25 cases now) - INSIDE initializeApp
 
-// Case 12: GEMS CASE
-CASES.push({
-  id: 'gems', name: 'GEMS CASE', price: 200, image: 'images/gemscase.png',
-  items: [
-    { name: 'Quartz', rarity: 1, minPrice: 50, maxPrice: 100, weight: 700, type: 'gem' },
-    { name: 'Amethyst', rarity: 2, minPrice: 150, maxPrice: 300, weight: 500, type: 'gem' },
-    { name: 'Ruby', rarity: 3, minPrice: 400, maxPrice: 700, weight: 300, type: 'gem' },
-    { name: 'Sapphire', rarity: 3, minPrice: 450, maxPrice: 750, weight: 250, type: 'gem' },
-    { name: 'Black Diamond', rarity: 4, minPrice: 2000, maxPrice: 4000, weight: 80, type: 'gem' },
-    { name: 'Dragon Egg', rarity: 5, minPrice: 15000, maxPrice: 25000, weight: 20, type: 'gem' }
-  ]
-});
-
-// Case 13: NETHER CASE  
-CASES.push({
-  id: 'nether', name: 'NETHER CASE', price: 450, image: 'images/nethercase.png',
-  items: [
-    { name: 'Netherrack', rarity: 0, minPrice: 10, maxPrice: 25, weight: 800, type: 'block' },
-    { name: 'Soul Sand', rarity: 1, minPrice: 40, maxPrice: 80, weight: 600, type: 'block' },
-    { name: 'Magma Cream', rarity: 2, minPrice: 120, maxPrice: 200, weight: 400, type: 'resource' },
-    { name: 'Blaze Rod', rarity: 2, minPrice: 200, maxPrice: 350, weight: 300, type: 'resource' },
-    { name: 'Wither Skeleton Skull', rarity: 3, minPrice: 800, maxPrice: 1200, weight: 150, type: 'armor' },
-    { name: 'Netherite Ingot', rarity: 4, minPrice: 2500, maxPrice: 4000, weight: 70, type: 'resource' },
-    { name: 'Netherite Armor', rarity: 4, minPrice: 5000, maxPrice: 8000, weight: 30, type: 'armor' }
-  ]
-});
-
-// Case 14: END CASE
-CASES.push({
-  id: 'end', name: 'END CASE', price: 800, image: 'images/endcase.png',
-  items: [
-    { name: 'End Stone', rarity: 1, minPrice: 80, maxPrice: 150, weight: 600, type: 'block' },
-    { name: 'Chorus Fruit', rarity: 2, minPrice: 200, maxPrice: 350, weight: 400, type: 'food' },
-    { name: 'Ender Pearl', rarity: 2, minPrice: 300, maxPrice: 500, weight: 300, type: 'resource' },
-    { name: 'Shulker Shell', rarity: 3, minPrice: 1000, maxPrice: 1800, weight: 150, type: 'resource' },
-    { name: 'Elytra Wings', rarity: 4, minPrice: 4000, maxPrice: 6000, weight: 60, type: 'armor' },
-    { name: 'Dragon Head', rarity: 4, minPrice: 8000, maxPrice: 12000, weight: 30, type: 'armor' },
-    { name: 'End Crystal', rarity: 5, minPrice: 20000, maxPrice: 30000, weight: 10, type: 'gem' }
-  ]
-});
-
-// Case 15: ENCHANTED CASE
-CASES.push({
-  id: 'enchanted', name: 'ENCHANTED CASE', price: 550, image: 'images/enchantedcase.png',
-  items: [
-    { name: 'Enchanted Book I', rarity: 1, minPrice: 100, maxPrice: 200, weight: 600, type: 'resource' },
-    { name: 'Enchanted Book II', rarity: 2, minPrice: 250, maxPrice: 450, weight: 400, type: 'resource' },
-    { name: 'Enchanted Book III', rarity: 3, minPrice: 600, maxPrice: 1000, weight: 200, type: 'resource' },
-    { name: 'Mending Book', rarity: 4, minPrice: 2500, maxPrice: 4000, weight: 80, type: 'resource' },
-    { name: 'Infinity Book', rarity: 4, minPrice: 3000, maxPrice: 5000, weight: 50, type: 'resource' },
-    { name: 'Sharpness V Book', rarity: 4, minPrice: 4000, maxPrice: 6000, weight: 30, type: 'resource' }
-  ]
-});
-
-// Case 16: OCEAN CASE
-CASES.push({
-  id: 'ocean', name: 'OCEAN CASE', price: 120, image: 'images/oceancase.png',
-  items: [
-    { name: 'Kelp', rarity: 0, minPrice: 5, maxPrice: 15, weight: 800, type: 'food' },
-    { name: 'Tropical Fish', rarity: 1, minPrice: 20, maxPrice: 40, weight: 600, type: 'food' },
-    { name: 'Prismarine Shard', rarity: 2, minPrice: 80, maxPrice: 150, weight: 400, type: 'resource' },
-    { name: 'Heart of the Sea', rarity: 3, minPrice: 800, maxPrice: 1200, weight: 150, type: 'gem' },
-    { name: 'Nautilus Shell', rarity: 3, minPrice: 900, maxPrice: 1500, weight: 100, type: 'resource' },
-    { name: 'Trident', rarity: 4, minPrice: 3000, maxPrice: 5000, weight: 40, type: 'bow' }
-  ]
-});
-
-// Case 17: VILLAGE CASE
-CASES.push({
-  id: 'village', name: 'VILLAGE CASE', price: 90, image: 'images/villagecase.png',
-  items: [
-    { name: 'Hay Bale', rarity: 0, minPrice: 8, maxPrice: 18, weight: 800, type: 'block' },
-    { name: 'Bell', rarity: 1, minPrice: 30, maxPrice: 60, weight: 600, type: 'block' },
-    { name: 'Lectern', rarity: 1, minPrice: 40, maxPrice: 70, weight: 500, type: 'block' },
-    { name: 'Cartography Table', rarity: 2, minPrice: 100, maxPrice: 180, weight: 300, type: 'block' },
-    { name: 'Smithing Table', rarity: 2, minPrice: 150, maxPrice: 250, weight: 200, type: 'block' },
-    { name: 'Totem of Undying', rarity: 4, minPrice: 5000, maxPrice: 8000, weight: 30, type: 'resource' }
-  ]
-});
-
-// Case 18: RARE BLOCKS CASE
-CASES.push({
-  id: 'rareblocks', name: 'RARE BLOCKS', price: 380, image: 'images/rareblockscase.png',
-  items: [
-    { name: 'Sponge', rarity: 2, minPrice: 200, maxPrice: 350, weight: 500, type: 'block' },
-    { name: 'Ancient Debris', rarity: 3, minPrice: 800, maxPrice: 1200, weight: 300, type: 'block' },
-    { name: 'Crying Obsidian', rarity: 3, minPrice: 900, maxPrice: 1400, weight: 250, type: 'block' },
-    { name: 'Reinforced Deepslate', rarity: 4, minPrice: 3000, maxPrice: 5000, weight: 80, type: 'block' },
-    { name: 'Dragon Egg Block', rarity: 5, minPrice: 25000, maxPrice: 40000, weight: 20, type: 'block' }
-  ]
-});
-
-// Case 19: MEGA SWORD CASE
-CASES.push({
-  id: 'megasword', name: 'MEGA SWORD CASE', price: 700, image: 'images/megaswordcase.png',
-  items: [
-    { name: 'Netherite Sword', rarity: 3, minPrice: 1500, maxPrice: 2500, weight: 300, type: 'sword' },
-    { name: 'Fire Aspect Sword', rarity: 3, minPrice: 1800, maxPrice: 2800, weight: 250, type: 'sword' },
-    { name: 'Knockback Sword', rarity: 3, minPrice: 1600, maxPrice: 2600, weight: 280, type: 'sword' },
-    { name: 'God Sword', rarity: 4, minPrice: 6000, maxPrice: 10000, weight: 100, type: 'sword' },
-    { name: 'Ultimate Blade', rarity: 5, minPrice: 18000, maxPrice: 28000, weight: 30, type: 'sword' }
-  ]
-});
-
-// Case 20: MEGA ARMOR CASE
-CASES.push({
-  id: 'megaarmor', name: 'MEGA ARMOR CASE', price: 850, image: 'images/megaarmorcase.png',
-  items: [
-    { name: 'Netherite Helmet', rarity: 3, minPrice: 1800, maxPrice: 2800, weight: 300, type: 'armor' },
-    { name: 'Netherite Chestplate', rarity: 3, minPrice: 2000, maxPrice: 3000, weight: 280, type: 'armor' },
-    { name: 'Netherite Leggings', rarity: 3, minPrice: 1900, maxPrice: 2900, weight: 290, type: 'armor' },
-    { name: 'Netherite Boots', rarity: 3, minPrice: 1700, maxPrice: 2700, weight: 310, type: 'armor' },
-    { name: 'Full Netherite Set', rarity: 4, minPrice: 8000, maxPrice: 12000, weight: 80, type: 'armor' },
-    { name: 'God Armor Set', rarity: 5, minPrice: 20000, maxPrice: 35000, weight: 25, type: 'armor' }
-  ]
-});
-
-// Case 21: LUCKY CASE
-CASES.push({
-  id: 'lucky', name: 'LUCKY CASE', price: 1500, image: 'images/luckycase.png',
-  items: [
-    { name: 'Lucky Block', rarity: 3, minPrice: 2000, maxPrice: 3500, weight: 250, type: 'block' },
-    { name: 'Golden Lucky Block', rarity: 4, minPrice: 5000, maxPrice: 8000, weight: 120, type: 'block' },
-    { name: 'Diamond Lucky Block', rarity: 4, minPrice: 8000, maxPrice: 12000, weight: 80, type: 'block' },
-    { name: 'Rainbow Lucky Block', rarity: 5, minPrice: 25000, maxPrice: 40000, weight: 30, type: 'block' }
-  ]
-});
-
-// Case 22: ANCIENT CASE
-CASES.push({
-  id: 'ancient', name: 'ANCIENT CASE', price: 2000, image: 'images/ancientcase.png',
-  items: [
-    { name: 'Ancient Fragment', rarity: 3, minPrice: 2500, maxPrice: 4000, weight: 300, type: 'resource' },
-    { name: 'Ancient Relic', rarity: 4, minPrice: 6000, maxPrice: 10000, weight: 150, type: 'gem' },
-    { name: 'Ancient Artifact', rarity: 4, minPrice: 8000, maxPrice: 13000, weight: 100, type: 'gem' },
-    { name: 'Ancient Crown', rarity: 5, minPrice: 20000, maxPrice: 35000, weight: 40, type: 'armor' },
-    { name: 'Ancient Treasure', rarity: 5, minPrice: 30000, maxPrice: 50000, weight: 15, type: 'gem' }
-  ]
-});
-
-// Case 23: COSMIC CASE
-CASES.push({
-  id: 'cosmic', name: 'COSMIC CASE', price: 3500, image: 'images/cosmiccase.png',
-  items: [
-    { name: 'Star Fragment', rarity: 4, minPrice: 8000, maxPrice: 12000, weight: 200, type: 'gem' },
-    { name: 'Moon Rock', rarity: 4, minPrice: 10000, maxPrice: 15000, weight: 150, type: 'resource' },
-    { name: 'Galaxy Sword', rarity: 5, minPrice: 25000, maxPrice: 40000, weight: 60, type: 'sword' },
-    { name: 'Cosmic Armor', rarity: 5, minPrice: 35000, maxPrice: 55000, weight: 40, type: 'armor' },
-    { name: 'Universe Crystal', rarity: 5, minPrice: 50000, maxPrice: 80000, weight: 15, type: 'gem' }
+  // Adding 15 MORE AMAZING CASES (Total: 25 cases now)
+  
+  // Case 11: TOOLS CASE
+  CASES.push({
+    id: 'tools', name: 'TOOLS CASE', price: 75, image: 'images/toolscase.png',
+    items: [
+      { name: 'Wooden Pickaxe', rarity: 0, minPrice: 5, maxPrice: 10, weight: 900, type: 'tool' },
+      { name: 'Stone Pickaxe', rarity: 0, minPrice: 8, maxPrice: 15, weight: 800, type: 'tool' },
+      { name: 'Iron Pickaxe', rarity: 1, minPrice: 20, maxPrice: 35, weight: 600, type: 'tool' },
+      { name: 'Golden Pickaxe', rarity: 2, minPrice: 80, maxPrice: 150, weight: 300, type: 'tool' },
+      { name: 'Diamond Pickaxe', rarity: 3, minPrice: 500, maxPrice: 800, weight: 150, type: 'tool' },
+      { name: 'Netherite Pickaxe', rarity: 4, minPrice: 1800, maxPrice: 2500, weight: 50, type: 'tool' }
+    ]
+  });
+  
+  // Case 12: GEMS CASE
+  CASES.push({
+    id: 'gems', name: 'GEMS CASE', price: 200, image: 'images/gemscase.png',
+    items: [
+      { name: 'Quartz', rarity: 1, minPrice: 50, maxPrice: 100, weight: 700, type: 'gem' },
+      { name: 'Amethyst', rarity: 2, minPrice: 150, maxPrice: 300, weight: 500, type: 'gem' },
+      { name: 'Ruby', rarity: 3, minPrice: 400, maxPrice: 700, weight: 300, type: 'gem' },
+      { name: 'Sapphire', rarity: 3, minPrice: 450, maxPrice: 750, weight: 250, type: 'gem' },
+      { name: 'Black Diamond', rarity: 4, minPrice: 2000, maxPrice: 4000, weight: 80, type: 'gem' },
+      { name: 'Dragon Egg', rarity: 5, minPrice: 15000, maxPrice: 25000, weight: 20, type: 'gem' }
+    ]
+  });
+  
+  // Case 13: NETHER CASE  
+  CASES.push({
+    id: 'nether', name: 'NETHER CASE', price: 450, image: 'images/nethercase.png',
+    items: [
+      { name: 'Netherrack', rarity: 0, minPrice: 10, maxPrice: 25, weight: 800, type: 'block' },
+      { name: 'Soul Sand', rarity: 1, minPrice: 40, maxPrice: 80, weight: 600, type: 'block' },
+      { name: 'Magma Cream', rarity: 2, minPrice: 120, maxPrice: 200, weight: 400, type: 'resource' },
+      { name: 'Blaze Rod', rarity: 2, minPrice: 200, maxPrice: 350, weight: 300, type: 'resource' },
+      { name: 'Wither Skeleton Skull', rarity: 3, minPrice: 800, maxPrice: 1200, weight: 150, type: 'armor' },
+      { name: 'Netherite Ingot', rarity: 4, minPrice: 2500, maxPrice: 4000, weight: 70, type: 'resource' },
+      { name: 'Netherite Armor', rarity: 4, minPrice: 5000, maxPrice: 8000, weight: 30, type: 'armor' }
+    ]
+  });
+  
+  // Case 14: END CASE
+  CASES.push({
+    id: 'end', name: 'END CASE', price: 800, image: 'images/endcase.png',
+    items: [
+      { name: 'End Stone', rarity: 1, minPrice: 80, maxPrice: 150, weight: 600, type: 'block' },
+      { name: 'Chorus Fruit', rarity: 2, minPrice: 200, maxPrice: 350, weight: 400, type: 'food' },
+      { name: 'Ender Pearl', rarity: 2, minPrice: 300, maxPrice: 500, weight: 300, type: 'resource' },
+      { name: 'Shulker Shell', rarity: 3, minPrice: 1000, maxPrice: 1800, weight: 150, type: 'resource' },
+      { name: 'Elytra Wings', rarity: 4, minPrice: 4000, maxPrice: 6000, weight: 60, type: 'armor' },
+      { name: 'Dragon Head', rarity: 4, minPrice: 8000, maxPrice: 12000, weight: 30, type: 'armor' },
+      { name: 'End Crystal', rarity: 5, minPrice: 20000, maxPrice: 30000, weight: 10, type: 'gem' }
+    ]
+  });
+  
+  // Case 15: ENCHANTED CASE
+  CASES.push({
+    id: 'enchanted', name: 'ENCHANTED CASE', price: 550, image: 'images/enchantedcase.png',
+    items: [
+      { name: 'Enchanted Book I', rarity: 1, minPrice: 100, maxPrice: 200, weight: 600, type: 'resource' },
+      { name: 'Enchanted Book II', rarity: 2, minPrice: 250, maxPrice: 450, weight: 400, type: 'resource' },
+      { name: 'Enchanted Book III', rarity: 3, minPrice: 600, maxPrice: 1000, weight: 200, type: 'resource' },
+      { name: 'Mending Book', rarity: 4, minPrice: 2500, maxPrice: 4000, weight: 80, type: 'resource' },
+      { name: 'Infinity Book', rarity: 4, minPrice: 3000, maxPrice: 5000, weight: 50, type: 'resource' },
+      { name: 'Sharpness V Book', rarity: 4, minPrice: 4000, maxPrice: 6000, weight: 30, type: 'resource' }
+    ]
+  });
+  
+  // Case 16: OCEAN CASE
+  CASES.push({
+    id: 'ocean', name: 'OCEAN CASE', price: 120, image: 'images/oceancase.png',
+    items: [
+      { name: 'Kelp', rarity: 0, minPrice: 5, maxPrice: 15, weight: 800, type: 'food' },
+      { name: 'Tropical Fish', rarity: 1, minPrice: 20, maxPrice: 40, weight: 600, type: 'food' },
+      { name: 'Prismarine Shard', rarity: 2, minPrice: 80, maxPrice: 150, weight: 400, type: 'resource' },
+      { name: 'Heart of the Sea', rarity: 3, minPrice: 800, maxPrice: 1200, weight: 150, type: 'gem' },
+      { name: 'Nautilus Shell', rarity: 3, minPrice: 900, maxPrice: 1500, weight: 100, type: 'resource' },
+      { name: 'Trident', rarity: 4, minPrice: 3000, maxPrice: 5000, weight: 40, type: 'bow' }
+    ]
+  });
+  
+  // Case 17: VILLAGE CASE
+  CASES.push({
+    id: 'village', name: 'VILLAGE CASE', price: 90, image: 'images/villagecase.png',
+    items: [
+      { name: 'Hay Bale', rarity: 0, minPrice: 8, maxPrice: 18, weight: 800, type: 'block' },
+      { name: 'Bell', rarity: 1, minPrice: 30, maxPrice: 60, weight: 600, type: 'block' },
+      { name: 'Lectern', rarity: 1, minPrice: 40, maxPrice: 70, weight: 500, type: 'block' },
+      { name: 'Cartography Table', rarity: 2, minPrice: 100, maxPrice: 180, weight: 300, type: 'block' },
+      { name: 'Smithing Table', rarity: 2, minPrice: 150, maxPrice: 250, weight: 200, type: 'block' },
+      { name: 'Totem of Undying', rarity: 4, minPrice: 5000, maxPrice: 8000, weight: 30, type: 'resource' }
+    ]
+  });
+  
+  // Case 18: RARE BLOCKS CASE
+  CASES.push({
+    id: 'rareblocks', name: 'RARE BLOCKS', price: 380, image: 'images/rareblockscase.png',
+    items: [
+      { name: 'Sponge', rarity: 2, minPrice: 200, maxPrice: 350, weight: 500, type: 'block' },
+      { name: 'Ancient Debris', rarity: 3, minPrice: 800, maxPrice: 1200, weight: 300, type: 'block' },
+      { name: 'Crying Obsidian', rarity: 3, minPrice: 900, maxPrice: 1400, weight: 250, type: 'block' },
+      { name: 'Reinforced Deepslate', rarity: 4, minPrice: 3000, maxPrice: 5000, weight: 80, type: 'block' },
+      { name: 'Dragon Egg Block', rarity: 5, minPrice: 25000, maxPrice: 40000, weight: 20, type: 'block' }
+    ]
+  });
+  
+  // Case 19: MEGA SWORD CASE
+  CASES.push({
+    id: 'megasword', name: 'MEGA SWORD CASE', price: 700, image: 'images/megaswordcase.png',
+    items: [
+      { name: 'Netherite Sword', rarity: 3, minPrice: 1500, maxPrice: 2500, weight: 300, type: 'sword' },
+      { name: 'Fire Aspect Sword', rarity: 3, minPrice: 1800, maxPrice: 2800, weight: 250, type: 'sword' },
+      { name: 'Knockback Sword', rarity: 3, minPrice: 1600, maxPrice: 2600, weight: 280, type: 'sword' },
+      { name: 'God Sword', rarity: 4, minPrice: 6000, maxPrice: 10000, weight: 100, type: 'sword' },
+      { name: 'Ultimate Blade', rarity: 5, minPrice: 18000, maxPrice: 28000, weight: 30, type: 'sword' }
+    ]
+  });
+  
+  // Case 20: MEGA ARMOR CASE
+  CASES.push({
+    id: 'megaarmor', name: 'MEGA ARMOR CASE', price: 850, image: 'images/megaarmorcase.png',
+    items: [
+      { name: 'Netherite Helmet', rarity: 3, minPrice: 1800, maxPrice: 2800, weight: 300, type: 'armor' },
+      { name: 'Netherite Chestplate', rarity: 3, minPrice: 2000, maxPrice: 3000, weight: 280, type: 'armor' },
+      { name: 'Netherite Leggings', rarity: 3, minPrice: 1900, maxPrice: 2900, weight: 290, type: 'armor' },
+      { name: 'Netherite Boots', rarity: 3, minPrice: 1700, maxPrice: 2700, weight: 310, type: 'armor' },
+      { name: 'Full Netherite Set', rarity: 4, minPrice: 8000, maxPrice: 12000, weight: 80, type: 'armor' },
+      { name: 'God Armor Set', rarity: 5, minPrice: 20000, maxPrice: 35000, weight: 25, type: 'armor' }
+    ]
+  });
+  
+  // Case 21: LUCKY CASE
+  CASES.push({
+    id: 'lucky', name: 'LUCKY CASE', price: 1500, image: 'images/luckycase.png',
+    items: [
+      { name: 'Lucky Block', rarity: 3, minPrice: 2000, maxPrice: 3500, weight: 250, type: 'block' },
+      { name: 'Golden Lucky Block', rarity: 4, minPrice: 5000, maxPrice: 8000, weight: 120, type: 'block' },
+      { name: 'Diamond Lucky Block', rarity: 4, minPrice: 8000, maxPrice: 12000, weight: 80, type: 'block' },
+      { name: 'Rainbow Lucky Block', rarity: 5, minPrice: 25000, maxPrice: 40000, weight: 30, type: 'block' }
+    ]
+  });
+  
+  // Case 22: ANCIENT CASE
+  CASES.push({
+    id: 'ancient', name: 'ANCIENT CASE', price: 2000, image: 'images/ancientcase.png',
+    items: [
+      { name: 'Ancient Fragment', rarity: 3, minPrice: 2500, maxPrice: 4000, weight: 300, type: 'resource' },
+      { name: 'Ancient Relic', rarity: 4, minPrice: 6000, maxPrice: 10000, weight: 150, type: 'gem' },
+      { name: 'Ancient Artifact', rarity: 4, minPrice: 8000, maxPrice: 13000, weight: 100, type: 'gem' },
+      { name: 'Ancient Crown', rarity: 5, minPrice: 20000, maxPrice: 35000, weight: 40, type: 'armor' },
+      { name: 'Ancient Treasure', rarity: 5, minPrice: 30000, maxPrice: 50000, weight: 15, type: 'gem' }
+    ]
+  });
+  
+  // Case 23: COSMIC CASE
+  CASES.push({
+    id: 'cosmic', name: 'COSMIC CASE', price: 3500, image: 'images/cosmiccase.png',
+    items: [
+      { name: 'Star Fragment', rarity: 4, minPrice: 8000, maxPrice: 12000, weight: 200, type: 'gem' },
+      { name: 'Moon Rock', rarity: 4, minPrice: 10000, maxPrice: 15000, weight: 150, type: 'resource' },
+      { name: 'Galaxy Sword', rarity: 5, minPrice: 25000, maxPrice: 40000, weight: 60, type: 'sword' },
+      { name: 'Cosmic Armor', rarity: 5, minPrice: 35000, maxPrice: 55000, weight: 40, type: 'armor' },
+      { name: 'Universe Crystal', rarity: 5, minPrice: 50000, maxPrice: 80000, weight: 15, type: 'gem' }
   ]
 });
 
