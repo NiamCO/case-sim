@@ -1,11 +1,19 @@
-// Wait for DOM and Supabase to load
-document.addEventListener('DOMContentLoaded', function() {
+// Wait for Supabase library to load
+function initializeApp() {
+  // Check if Supabase is available
+  if (typeof window.supabase === 'undefined') {
+    console.log('Waiting for Supabase library...');
+    setTimeout(initializeApp, 100);
+    return;
+  }
 
 // Supabase Configuration
 const SUPABASE_URL = 'https://zavxywrocjrnuzqchjaz.supabase.co';
-const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inphdnh5d3JvY2pybnV6cWNoamF6Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzM3ODM3MzUsImV4cCI6MjA4OTM1OTczNX0.1xOya_AA0VXbM-6Vj-6TTeoMVwc3P3g7TmCMyQFhKCs';
+const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inphdnh5d3JvY2pybnV6cWNoamF6Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzM3ODM3MzUsImV4cCI6MjA4OTM1OTczNX0.1xOya_AA0VXbM-6Vj-6TTeoMVwc3P3g7TmCMyQFhKCs';
 
-const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+console.log('Initializing Supabase client...');
+const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+console.log('Supabase client created:', supabaseClient ? 'SUCCESS' : 'FAILED');
 
 // Global State
 let currentUser = null;
@@ -1146,4 +1154,11 @@ console.log('- giveMoney(amount) - Add money to your account');
 console.log('- setMoney(amount) - Set exact money amount');
 console.log('- resetProgress() - Reset all progress');
 
-}); // End of DOMContentLoaded
+} // End of initializeApp
+
+// Start initialization when DOM is ready
+if (document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', initializeApp);
+} else {
+  initializeApp();
+}
