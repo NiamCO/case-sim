@@ -407,9 +407,39 @@ async function loadPlayerData() {
       .from('player_data')
       .select('*')
       .eq('id', currentUser.id)
-      .single();
+      .maybeSingle();
     
-    if (error) throw error;
+    if (error) {
+      console.error('Error loading player data:', error);
+      // Initialize with defaults if data doesn't exist
+      playerData = {
+        money: 100,
+        inventory: [],
+        totalCasesOpened: 0,
+        bestItemWon: null,
+        totalSpent: 0,
+        totalEarned: 0,
+        dailyStreak: 1,
+        lastDailyClaim: null,
+        shopItems: [],
+        achievements: [],
+        slotsSpins: 0,
+        upgradesSuccess: 0,
+        shopPurchases: 0
+      };
+      updateMoney();
+      checkDailyReward();
+      checkShopRefresh();
+      return;
+    }
+    
+    if (!data) {
+      console.log('No player data found, using defaults');
+      updateMoney();
+      checkDailyReward();
+      checkShopRefresh();
+      return;
+    }
     
     playerData = {
       money: parseFloat(data.money) || 100,
@@ -1203,15 +1233,26 @@ async function initApp() {
 supabaseClient.auth.getSession().then(({ data: { session } }) => {
   if (session) {
     supabaseClient.auth.getUser().then(async ({ data: { user } }) => {
-      const { data: playerInfo } = await supabaseClient
-        .from('player_data')
-        .select('username')
-        .eq('id', user.id)
-        .single();
+      if (!user) return;
       
-      currentUser = { id: user.id, username: playerInfo.username };
-      await loadPlayerData();
-      showMainApp();
+      try {
+        const { data: playerInfo, error } = await supabaseClient
+          .from('player_data')
+          .select('username')
+          .eq('id', user.id)
+          .single();
+        
+        if (error || !playerInfo) {
+          console.error('Could not load username:', error);
+          return;
+        }
+        
+        currentUser = { id: user.id, username: playerInfo.username };
+        await loadPlayerData();
+        showMainApp();
+      } catch (err) {
+        console.error('Session error:', err);
+      }
     });
   }
 });
