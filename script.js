@@ -23,44 +23,13 @@ let playerData = {
   totalEarned: 0,
   dailyStreak: 1,
   lastDailyClaim: null,
-  shopItems: [],
-  achievements: [],
-  slotsSpins: 0,
-  upgradesSuccess: 0,
-  shopPurchases: 0
+  shopItems: []
 };
 
 let selectedCase = null;
 let selectedInventoryItems = [];
 let craftingSlots = Array(9).fill(null);
 let currentLeaderboardFilter = 'value';
-let currentInventoryPage = 1;
-let itemsPerPage = 24;
-let slotBet = 10;
-let isSpinning = false;
-
-const ACHIEVEMENTS = [
-  { id: 'first_case', name: 'First Steps', description: 'Open your first case', icon: '📦', check: (p) => p.totalCasesOpened >= 1 },
-  { id: 'case_10', name: 'Getting Started', description: 'Open 10 cases', icon: '🎁', check: (p) => p.totalCasesOpened >= 10 },
-  { id: 'case_50', name: 'Case Enthusiast', description: 'Open 50 cases', icon: '🎉', check: (p) => p.totalCasesOpened >= 50 },
-  { id: 'case_100', name: 'Case Master', description: 'Open 100 cases', icon: '👑', check: (p) => p.totalCasesOpened >= 100 },
-  { id: 'case_500', name: 'Obsessed', description: 'Open 500 cases', icon: '💎', check: (p) => p.totalCasesOpened >= 500 },
-  { id: 'rich_1k', name: 'Thousandaire', description: 'Have $1,000', icon: '💰', check: (p) => p.money >= 1000 },
-  { id: 'rich_10k', name: 'Big Spender', description: 'Have $10,000', icon: '💵', check: (p) => p.money >= 10000 },
-  { id: 'rich_100k', name: 'Millionaire Path', description: 'Have $100,000', icon: '🤑', check: (p) => p.money >= 100000 },
-  { id: 'inv_10', name: 'Collector', description: 'Have 10 items in inventory', icon: '🎒', check: (p) => p.inventory.length >= 10 },
-  { id: 'inv_50', name: 'Hoarder', description: 'Have 50 items in inventory', icon: '📦', check: (p) => p.inventory.length >= 50 },
-  { id: 'inv_100', name: 'Storage Expert', description: 'Have 100 items in inventory', icon: '🏆', check: (p) => p.inventory.length >= 100 },
-  { id: 'legendary', name: 'Legendary Find', description: 'Win a Legendary item', icon: '⭐', check: (p) => p.inventory.some(i => i.rarity === 4) },
-  { id: 'divine', name: 'Divine Blessing', description: 'Win a Divine item', icon: '✨', check: (p) => p.inventory.some(i => i.rarity === 5) },
-  { id: 'streak_7', name: 'Weekly Warrior', description: '7 day login streak', icon: '🔥', check: (p) => p.dailyStreak >= 7 },
-  { id: 'streak_30', name: 'Monthly Master', description: '30 day login streak', icon: '🌟', check: (p) => p.dailyStreak >= 30 },
-  { id: 'upgrade_success', name: 'Alchemist', description: 'Successfully upgrade an item', icon: '⚗️', check: (p) => p.upgradesSuccess >= 1 },
-  { id: 'shop_buy', name: 'Smart Shopper', description: 'Buy from the shop', icon: '🛒', check: (p) => p.shopPurchases >= 1 },
-  { id: 'big_win', name: 'Jackpot!', description: 'Win an item worth $5,000+', icon: '💸', check: (p) => p.bestItemWon && p.bestItemWon.value >= 5000 },
-  { id: 'slots_10', name: 'Slot Novice', description: 'Spin slots 10 times', icon: '🎰', check: (p) => p.slotsSpins >= 10 },
-  { id: 'slots_100', name: 'Slot Addict', description: 'Spin slots 100 times', icon: '🎲', check: (p) => p.slotsSpins >= 100 }
-];
 
 window.giveMoney = (amount) => {
   playerData.money += amount;
@@ -73,15 +42,13 @@ window.setMoney = (amount) => {
   playerData.money = amount;
   updateMoney();
   savePlayerData();
-  console.log(`💰 Set money to $${amount}`);
 };
 
 window.resetProgress = async () => {
-  if (confirm('⚠️ Reset ALL progress?')) {
+  if (confirm('Reset ALL progress?')) {
     playerData = {
       money: 100, inventory: [], totalCasesOpened: 0, bestItemWon: null,
-      totalSpent: 0, totalEarned: 0, dailyStreak: 1, lastDailyClaim: null,
-      shopItems: [], achievements: [], slotsSpins: 0, upgradesSuccess: 0, shopPurchases: 0
+      totalSpent: 0, totalEarned: 0, dailyStreak: 1, lastDailyClaim: null, shopItems: []
     };
     await savePlayerData();
     location.reload();
@@ -145,40 +112,9 @@ function selectRandomItem(caseData) {
   return { ...caseData.items[0] };
 }
 
-function checkAchievements() {
-  const newAchievements = [];
-  ACHIEVEMENTS.forEach(achievement => {
-    if (!playerData.achievements.includes(achievement.id) && achievement.check(playerData)) {
-      playerData.achievements.push(achievement.id);
-      newAchievements.push(achievement);
-    }
-  });
-  
-  if (newAchievements.length > 0) {
-    newAchievements.forEach(ach => showAchievementNotification(ach));
-    savePlayerData();
-  }
-}
-
-function showAchievementNotification(achievement) {
-  const notification = document.createElement('div');
-  notification.className = 'achievement-notification';
-  notification.innerHTML = `
-    <div class="achievement-icon">${achievement.icon}</div>
-    <div>
-      <div class="achievement-title">Achievement Unlocked!</div>
-      <div class="achievement-name">${achievement.name}</div>
-    </div>
-  `;
-  document.body.appendChild(notification);
-  setTimeout(() => notification.classList.add('show'), 100);
-  setTimeout(() => {
-    notification.classList.remove('show');
-    setTimeout(() => notification.remove(), 300);
-  }, 4000);
-}
-
+// 30 TOTAL CASES - Original 10 + 20 NEW!
 const CASES = [
+  // Original 10 cases
   { id: 'resources', name: 'RESOURCES CASE', price: 12, image: 'images/resourcescase.png', items: [
     { name: 'Coal', rarity: 0, minPrice: 2, maxPrice: 6, weight: 1200, type: 'resource' },
     { name: 'Flint', rarity: 0, minPrice: 3, maxPrice: 8, weight: 1000, type: 'resource' },
@@ -273,9 +209,13 @@ const CASES = [
     { name: 'Nether Star', rarity: 5, minPrice: 8000, maxPrice: 12000, weight: 50, type: 'resource' },
     { name: 'Divine Sword', rarity: 5, minPrice: 10000, maxPrice: 15000, weight: 30, type: 'sword' }
   ]},
+  
+  // 20 NEW CASES START HERE!
   { id: 'tools', name: 'TOOLS CASE', price: 75, image: 'images/toolscase.png', items: [
     { name: 'Wooden Pickaxe', rarity: 0, minPrice: 5, maxPrice: 10, weight: 900, type: 'tool' },
+    { name: 'Stone Axe', rarity: 0, minPrice: 6, maxPrice: 12, weight: 850, type: 'tool' },
     { name: 'Iron Pickaxe', rarity: 1, minPrice: 20, maxPrice: 35, weight: 600, type: 'tool' },
+    { name: 'Iron Shovel', rarity: 1, minPrice: 18, maxPrice: 32, weight: 580, type: 'tool' },
     { name: 'Golden Pickaxe', rarity: 2, minPrice: 80, maxPrice: 150, weight: 300, type: 'tool' },
     { name: 'Diamond Pickaxe', rarity: 3, minPrice: 500, maxPrice: 800, weight: 150, type: 'tool' },
     { name: 'Netherite Pickaxe', rarity: 4, minPrice: 1800, maxPrice: 2500, weight: 50, type: 'tool' }
@@ -284,8 +224,113 @@ const CASES = [
     { name: 'Quartz', rarity: 1, minPrice: 50, maxPrice: 100, weight: 700, type: 'gem' },
     { name: 'Amethyst', rarity: 2, minPrice: 150, maxPrice: 300, weight: 500, type: 'gem' },
     { name: 'Ruby', rarity: 3, minPrice: 400, maxPrice: 700, weight: 300, type: 'gem' },
+    { name: 'Sapphire', rarity: 3, minPrice: 450, maxPrice: 750, weight: 250, type: 'gem' },
     { name: 'Black Diamond', rarity: 4, minPrice: 2000, maxPrice: 4000, weight: 80, type: 'gem' },
     { name: 'Dragon Egg', rarity: 5, minPrice: 15000, maxPrice: 25000, weight: 20, type: 'gem' }
+  ]},
+  { id: 'nether', name: 'NETHER CASE', price: 450, image: 'images/nethercase.png', items: [
+    { name: 'Netherrack', rarity: 0, minPrice: 10, maxPrice: 25, weight: 800, type: 'block' },
+    { name: 'Soul Sand', rarity: 1, minPrice: 40, maxPrice: 80, weight: 600, type: 'block' },
+    { name: 'Magma Cream', rarity: 2, minPrice: 120, maxPrice: 200, weight: 400, type: 'resource' },
+    { name: 'Blaze Rod', rarity: 2, minPrice: 200, maxPrice: 350, weight: 300, type: 'resource' },
+    { name: 'Wither Skeleton Skull', rarity: 3, minPrice: 800, maxPrice: 1200, weight: 150, type: 'armor' },
+    { name: 'Netherite Ingot', rarity: 4, minPrice: 2500, maxPrice: 4000, weight: 70, type: 'resource' }
+  ]},
+  { id: 'end', name: 'END CASE', price: 800, image: 'images/endcase.png', items: [
+    { name: 'End Stone', rarity: 1, minPrice: 80, maxPrice: 150, weight: 600, type: 'block' },
+    { name: 'Chorus Fruit', rarity: 2, minPrice: 200, maxPrice: 350, weight: 400, type: 'food' },
+    { name: 'Ender Pearl', rarity: 2, minPrice: 300, maxPrice: 500, weight: 300, type: 'resource' },
+    { name: 'Shulker Shell', rarity: 3, minPrice: 1000, maxPrice: 1800, weight: 150, type: 'resource' },
+    { name: 'Elytra Wings', rarity: 4, minPrice: 4000, maxPrice: 6000, weight: 60, type: 'armor' },
+    { name: 'Dragon Head', rarity: 4, minPrice: 8000, maxPrice: 12000, weight: 30, type: 'armor' }
+  ]},
+  { id: 'enchanted', name: 'ENCHANTED CASE', price: 550, image: 'images/enchantedcase.png', items: [
+    { name: 'Enchanted Book I', rarity: 1, minPrice: 100, maxPrice: 200, weight: 600, type: 'resource' },
+    { name: 'Enchanted Book II', rarity: 2, minPrice: 250, maxPrice: 450, weight: 400, type: 'resource' },
+    { name: 'Enchanted Book III', rarity: 3, minPrice: 600, maxPrice: 1000, weight: 200, type: 'resource' },
+    { name: 'Mending Book', rarity: 4, minPrice: 2500, maxPrice: 4000, weight: 80, type: 'resource' },
+    { name: 'Sharpness V Book', rarity: 4, minPrice: 4000, maxPrice: 6000, weight: 30, type: 'resource' }
+  ]},
+  { id: 'ocean', name: 'OCEAN CASE', price: 120, image: 'images/oceancase.png', items: [
+    { name: 'Kelp', rarity: 0, minPrice: 5, maxPrice: 15, weight: 800, type: 'food' },
+    { name: 'Tropical Fish', rarity: 1, minPrice: 20, maxPrice: 40, weight: 600, type: 'food' },
+    { name: 'Prismarine Shard', rarity: 2, minPrice: 80, maxPrice: 150, weight: 400, type: 'resource' },
+    { name: 'Heart of the Sea', rarity: 3, minPrice: 800, maxPrice: 1200, weight: 150, type: 'gem' },
+    { name: 'Trident', rarity: 4, minPrice: 3000, maxPrice: 5000, weight: 40, type: 'bow' }
+  ]},
+  { id: 'village', name: 'VILLAGE CASE', price: 90, image: 'images/villagecase.png', items: [
+    { name: 'Hay Bale', rarity: 0, minPrice: 8, maxPrice: 18, weight: 800, type: 'block' },
+    { name: 'Bell', rarity: 1, minPrice: 30, maxPrice: 60, weight: 600, type: 'block' },
+    { name: 'Lectern', rarity: 1, minPrice: 40, maxPrice: 70, weight: 500, type: 'block' },
+    { name: 'Smithing Table', rarity: 2, minPrice: 150, maxPrice: 250, weight: 200, type: 'block' },
+    { name: 'Totem of Undying', rarity: 4, minPrice: 5000, maxPrice: 8000, weight: 30, type: 'resource' }
+  ]},
+  { id: 'rareblocks', name: 'RARE BLOCKS', price: 380, image: 'images/rareblockscase.png', items: [
+    { name: 'Sponge', rarity: 2, minPrice: 200, maxPrice: 350, weight: 500, type: 'block' },
+    { name: 'Ancient Debris', rarity: 3, minPrice: 800, maxPrice: 1200, weight: 300, type: 'block' },
+    { name: 'Crying Obsidian', rarity: 3, minPrice: 900, maxPrice: 1400, weight: 250, type: 'block' },
+    { name: 'Reinforced Deepslate', rarity: 4, minPrice: 3000, maxPrice: 5000, weight: 80, type: 'block' }
+  ]},
+  { id: 'megasword', name: 'MEGA SWORD', price: 700, image: 'images/megaswordcase.png', items: [
+    { name: 'Netherite Sword', rarity: 3, minPrice: 1500, maxPrice: 2500, weight: 300, type: 'sword' },
+    { name: 'Fire Aspect Sword', rarity: 3, minPrice: 1800, maxPrice: 2800, weight: 250, type: 'sword' },
+    { name: 'God Sword', rarity: 4, minPrice: 6000, maxPrice: 10000, weight: 100, type: 'sword' },
+    { name: 'Ultimate Blade', rarity: 5, minPrice: 18000, maxPrice: 28000, weight: 30, type: 'sword' }
+  ]},
+  { id: 'megaarmor', name: 'MEGA ARMOR', price: 850, image: 'images/megaarmorcase.png', items: [
+    { name: 'Netherite Helmet', rarity: 3, minPrice: 1800, maxPrice: 2800, weight: 300, type: 'armor' },
+    { name: 'Netherite Chestplate', rarity: 3, minPrice: 2000, maxPrice: 3000, weight: 280, type: 'armor' },
+    { name: 'Full Netherite Set', rarity: 4, minPrice: 8000, maxPrice: 12000, weight: 80, type: 'armor' },
+    { name: 'God Armor Set', rarity: 5, minPrice: 20000, maxPrice: 35000, weight: 25, type: 'armor' }
+  ]},
+  { id: 'lucky', name: 'LUCKY CASE', price: 1500, image: 'images/luckycase.png', items: [
+    { name: 'Lucky Block', rarity: 3, minPrice: 2000, maxPrice: 3500, weight: 250, type: 'block' },
+    { name: 'Golden Lucky Block', rarity: 4, minPrice: 5000, maxPrice: 8000, weight: 120, type: 'block' },
+    { name: 'Rainbow Lucky Block', rarity: 5, minPrice: 25000, maxPrice: 40000, weight: 30, type: 'block' }
+  ]},
+  { id: 'ancient', name: 'ANCIENT CASE', price: 2000, image: 'images/ancientcase.png', items: [
+    { name: 'Ancient Fragment', rarity: 3, minPrice: 2500, maxPrice: 4000, weight: 300, type: 'resource' },
+    { name: 'Ancient Relic', rarity: 4, minPrice: 6000, maxPrice: 10000, weight: 150, type: 'gem' },
+    { name: 'Ancient Crown', rarity: 5, minPrice: 20000, maxPrice: 35000, weight: 40, type: 'armor' }
+  ]},
+  { id: 'cosmic', name: 'COSMIC CASE', price: 3500, image: 'images/cosmiccase.png', items: [
+    { name: 'Star Fragment', rarity: 4, minPrice: 8000, maxPrice: 12000, weight: 200, type: 'gem' },
+    { name: 'Galaxy Sword', rarity: 5, minPrice: 25000, maxPrice: 40000, weight: 60, type: 'sword' },
+    { name: 'Universe Crystal', rarity: 5, minPrice: 50000, maxPrice: 80000, weight: 15, type: 'gem' }
+  ]},
+  { id: 'ultimate', name: 'ULTIMATE CASE', price: 5000, image: 'images/ultimatecase.png', items: [
+    { name: 'Ultimate Sword', rarity: 5, minPrice: 40000, maxPrice: 60000, weight: 100, type: 'sword' },
+    { name: 'Ultimate Armor', rarity: 5, minPrice: 50000, maxPrice: 70000, weight: 80, type: 'armor' },
+    { name: 'Infinity Stone', rarity: 5, minPrice: 100000, maxPrice: 150000, weight: 20, type: 'gem' }
+  ]},
+  { id: 'mystery', name: 'MYSTERY CASE', price: 500, image: 'images/mysterycase.png', items: [
+    { name: 'Mystery Box', rarity: 2, minPrice: 300, maxPrice: 600, weight: 400, type: 'block' },
+    { name: 'Rare Mystery Box', rarity: 3, minPrice: 1000, maxPrice: 2000, weight: 200, type: 'block' },
+    { name: 'Legendary Mystery Box', rarity: 4, minPrice: 5000, maxPrice: 10000, weight: 50, type: 'block' }
+  ]},
+  { id: 'wizard', name: 'WIZARD CASE', price: 650, image: 'images/wizardcase.png', items: [
+    { name: 'Wizard Hat', rarity: 2, minPrice: 400, maxPrice: 700, weight: 400, type: 'armor' },
+    { name: 'Magic Wand', rarity: 3, minPrice: 1200, maxPrice: 2000, weight: 200, type: 'tool' },
+    { name: 'Wizard Staff', rarity: 4, minPrice: 4000, maxPrice: 7000, weight: 80, type: 'tool' }
+  ]},
+  { id: 'ice', name: 'ICE CASE', price: 300, image: 'images/icecase.png', items: [
+    { name: 'Ice Block', rarity: 1, minPrice: 60, maxPrice: 120, weight: 600, type: 'block' },
+    { name: 'Packed Ice', rarity: 2, minPrice: 200, maxPrice: 400, weight: 300, type: 'block' },
+    { name: 'Blue Ice', rarity: 3, minPrice: 800, maxPrice: 1500, weight: 100, type: 'block' },
+    { name: 'Frozen Heart', rarity: 4, minPrice: 4000, maxPrice: 7000, weight: 40, type: 'gem' }
+  ]},
+  { id: 'fire', name: 'FIRE CASE', price: 400, image: 'images/firecase.png', items: [
+    { name: 'Fire Charge', rarity: 1, minPrice: 80, maxPrice: 150, weight: 600, type: 'resource' },
+    { name: 'Lava Bucket', rarity: 2, minPrice: 250, maxPrice: 500, weight: 300, type: 'tool' },
+    { name: 'Fire Sword', rarity: 3, minPrice: 1500, maxPrice: 2500, weight: 100, type: 'sword' },
+    { name: 'Inferno Gem', rarity: 4, minPrice: 5000, maxPrice: 9000, weight: 40, type: 'gem' }
+  ]},
+  { id: 'nature', name: 'NATURE CASE', price: 250, image: 'images/naturecase.png', items: [
+    { name: 'Oak Sapling', rarity: 0, minPrice: 20, maxPrice: 40, weight: 800, type: 'resource' },
+    { name: 'Bamboo', rarity: 1, minPrice: 60, maxPrice: 120, weight: 500, type: 'resource' },
+    { name: 'Cactus', rarity: 1, minPrice: 70, maxPrice: 130, weight: 450, type: 'block' },
+    { name: 'Nature Staff', rarity: 3, minPrice: 1800, maxPrice: 3000, weight: 100, type: 'tool' },
+    { name: 'Ancient Tree', rarity: 4, minPrice: 6000, maxPrice: 10000, weight: 30, type: 'block' }
   ]},
   { id: 'god', name: 'GOD CASE', price: 10000, image: 'images/godcase.png', items: [
     { name: 'God Sword', rarity: 5, minPrice: 80000, maxPrice: 120000, weight: 80, type: 'sword' },
@@ -346,11 +391,7 @@ window.signup = async function() {
         total_cases_opened: 0,
         total_spent: 0,
         total_earned: 0,
-        daily_streak: 1,
-        achievements: [],
-        slots_spins: 0,
-        upgrades_success: 0,
-        shop_purchases: 0
+        daily_streak: 1
       }]);
     
     if (dbError) throw dbError;
@@ -407,39 +448,9 @@ async function loadPlayerData() {
       .from('player_data')
       .select('*')
       .eq('id', currentUser.id)
-      .maybeSingle();
+      .single();
     
-    if (error) {
-      console.error('Error loading player data:', error);
-      // Initialize with defaults if data doesn't exist
-      playerData = {
-        money: 100,
-        inventory: [],
-        totalCasesOpened: 0,
-        bestItemWon: null,
-        totalSpent: 0,
-        totalEarned: 0,
-        dailyStreak: 1,
-        lastDailyClaim: null,
-        shopItems: [],
-        achievements: [],
-        slotsSpins: 0,
-        upgradesSuccess: 0,
-        shopPurchases: 0
-      };
-      updateMoney();
-      checkDailyReward();
-      checkShopRefresh();
-      return;
-    }
-    
-    if (!data) {
-      console.log('No player data found, using defaults');
-      updateMoney();
-      checkDailyReward();
-      checkShopRefresh();
-      return;
-    }
+    if (error) throw error;
     
     playerData = {
       money: parseFloat(data.money) || 100,
@@ -450,11 +461,7 @@ async function loadPlayerData() {
       totalEarned: parseFloat(data.total_earned) || 0,
       dailyStreak: data.daily_streak || 1,
       lastDailyClaim: data.last_daily_claim,
-      shopItems: data.shop_items || [],
-      achievements: data.achievements || [],
-      slotsSpins: data.slots_spins || 0,
-      upgradesSuccess: data.upgrades_success || 0,
-      shopPurchases: data.shop_purchases || 0
+      shopItems: data.shop_items || []
     };
     
     updateMoney();
@@ -481,10 +488,6 @@ async function savePlayerData() {
         daily_streak: playerData.dailyStreak,
         last_daily_claim: playerData.lastDailyClaim,
         shop_items: playerData.shopItems,
-        achievements: playerData.achievements,
-        slots_spins: playerData.slotsSpins,
-        upgrades_success: playerData.upgradesSuccess,
-        shop_purchases: playerData.shopPurchases,
         updated_at: new Date().toISOString()
       })
       .eq('id', currentUser.id);
@@ -506,8 +509,6 @@ window.switchTab = function(tab) {
     loadLeaderboard();
   } else if (tab === 'upgrades') {
     renderUpgradeInventory();
-  } else if (tab === 'inventory') {
-    renderInventory();
   }
 }
 
@@ -532,7 +533,6 @@ window.claimDaily = async function() {
   
   updateMoney();
   await savePlayerData();
-  checkAchievements();
   
   document.getElementById('daily-reward-btn').style.display = 'none';
 }
@@ -591,7 +591,6 @@ window.buyShopItem = async function(index) {
   
   playSound('button');
   playerData.money -= item.shopPrice;
-  playerData.shopPurchases = (playerData.shopPurchases || 0) + 1;
   
   const newItem = {
     ...item,
@@ -603,7 +602,6 @@ window.buyShopItem = async function(index) {
   playerData.inventory.push(newItem);
   updateMoney();
   await savePlayerData();
-  checkAchievements();
   renderShop();
   renderInventory();
 }
@@ -731,7 +729,6 @@ window.openCase = async function() {
     }
     
     await savePlayerData();
-    checkAchievements();
     showWinScreen(newItem);
   }, 4200);
 }
@@ -769,33 +766,22 @@ window.closeWinScreen = function() {
 function renderInventory() {
   const grid = document.getElementById('inventory-grid');
   const empty = document.getElementById('inventory-empty');
-  const pagination = document.getElementById('inventory-pagination');
   
   document.getElementById('inventory-count').textContent = playerData.inventory.length;
   
   if (playerData.inventory.length === 0) {
     grid.style.display = 'none';
     empty.style.display = 'block';
-    pagination.style.display = 'none';
-    document.getElementById('select-all-btn').style.display = 'none';
     return;
   }
   
   grid.style.display = 'grid';
   empty.style.display = 'none';
-  document.getElementById('select-all-btn').style.display = 'block';
-  
-  const totalPages = Math.ceil(playerData.inventory.length / itemsPerPage);
-  const startIndex = (currentInventoryPage - 1) * itemsPerPage;
-  const endIndex = startIndex + itemsPerPage;
-  const pageItems = playerData.inventory.slice(startIndex, endIndex);
-  
   grid.innerHTML = '';
   
-  pageItems.forEach(item => {
+  playerData.inventory.forEach(item => {
     const card = document.createElement('div');
     card.className = `inventory-item ${selectedInventoryItems.includes(item.id) ? 'selected' : ''}`;
-    if (item.rarity >= 3) card.classList.add('sparkle-item');
     card.onclick = () => toggleInventoryItem(item.id);
     
     card.innerHTML = `
@@ -814,33 +800,7 @@ function renderInventory() {
     grid.appendChild(card);
   });
   
-  if (totalPages > 1) {
-    pagination.style.display = 'flex';
-    document.getElementById('inventory-page-info').textContent = `Page ${currentInventoryPage} of ${totalPages}`;
-  } else {
-    pagination.style.display = 'none';
-  }
-  
   updateSellButton();
-}
-
-window.changeInventoryPage = function(delta) {
-  const totalPages = Math.ceil(playerData.inventory.length / itemsPerPage);
-  currentInventoryPage += delta;
-  if (currentInventoryPage < 1) currentInventoryPage = 1;
-  if (currentInventoryPage > totalPages) currentInventoryPage = totalPages;
-  playSound('button');
-  renderInventory();
-}
-
-window.selectAllItems = function() {
-  playSound('select');
-  if (selectedInventoryItems.length === playerData.inventory.length) {
-    selectedInventoryItems = [];
-  } else {
-    selectedInventoryItems = playerData.inventory.map(item => item.id);
-  }
-  renderInventory();
 }
 
 function toggleInventoryItem(id) {
@@ -879,102 +839,9 @@ window.sellItems = async function() {
   playerData.inventory = playerData.inventory.filter(item => !selectedInventoryItems.includes(item.id));
   selectedInventoryItems = [];
   
-  const totalPages = Math.ceil(playerData.inventory.length / itemsPerPage);
-  if (currentInventoryPage > totalPages) currentInventoryPage = totalPages || 1;
-  
   updateMoney();
   await savePlayerData();
   renderInventory();
-}
-
-const SLOT_SYMBOLS = [
-  { icon: '💎', rarity: 4, multiplier: 50 },
-  { icon: '⭐', rarity: 3, multiplier: 25 },
-  { icon: '👑', rarity: 3, multiplier: 20 },
-  { icon: '🔥', rarity: 2, multiplier: 10 },
-  { icon: '💰', rarity: 2, multiplier: 8 },
-  { icon: '🎁', rarity: 1, multiplier: 5 },
-  { icon: '🍎', rarity: 1, multiplier: 3 },
-  { icon: '⚔️', rarity: 0, multiplier: 2 }
-];
-
-window.changeBet = function(amount) {
-  slotBet += amount;
-  if (slotBet < 10) slotBet = 10;
-  if (slotBet > playerData.money) slotBet = Math.floor(playerData.money / 10) * 10;
-  if (slotBet > 1000) slotBet = 1000;
-  
-  document.getElementById('slot-bet').textContent = slotBet;
-  document.getElementById('spin-cost').textContent = slotBet;
-  playSound('button');
-}
-
-window.spinSlots = async function() {
-  if (isSpinning || playerData.money < slotBet) return;
-  
-  isSpinning = true;
-  playSound('spin');
-  playerData.money -= slotBet;
-  playerData.slotsSpins = (playerData.slotsSpins || 0) + 1;
-  updateMoney();
-  
-  const result1 = SLOT_SYMBOLS[Math.floor(Math.random() * SLOT_SYMBOLS.length)];
-  const result2 = SLOT_SYMBOLS[Math.floor(Math.random() * SLOT_SYMBOLS.length)];
-  const result3 = SLOT_SYMBOLS[Math.floor(Math.random() * SLOT_SYMBOLS.length)];
-  
-  animateReel('reel-1', result1);
-  setTimeout(() => animateReel('reel-2', result2), 200);
-  setTimeout(() => animateReel('reel-3', result3), 400);
-  
-  setTimeout(async () => {
-    let winAmount = 0;
-    let message = '';
-    
-    if (result1.icon === result2.icon && result2.icon === result3.icon) {
-      winAmount = slotBet * result1.multiplier;
-      message = `🎉 JACKPOT! 3x ${result1.icon} = $${winAmount}!`;
-      playSound('opened');
-    } else if (result1.icon === result2.icon || result2.icon === result3.icon || result1.icon === result3.icon) {
-      const matchedSymbol = result1.icon === result2.icon ? result1 : (result2.icon === result3.icon ? result2 : result1);
-      winAmount = slotBet * Math.floor(matchedSymbol.multiplier / 2);
-      message = `✨ Match! 2x ${matchedSymbol.icon} = $${winAmount}`;
-      playSound('button');
-    } else {
-      message = '💔 No match. Try again!';
-    }
-    
-    if (winAmount > 0) {
-      playerData.money += winAmount;
-      playerData.totalEarned += winAmount;
-      updateMoney();
-    }
-    
-    document.getElementById('slots-result').innerHTML = `
-      <div style="font-size: 20px; font-weight: bold; color: ${winAmount > 0 ? '#35c895' : '#ef4444'}">
-        ${message}
-      </div>
-    `;
-    
-    await savePlayerData();
-    checkAchievements();
-    isSpinning = false;
-  }, 2000);
-}
-
-function animateReel(reelId, finalSymbol) {
-  const reel = document.getElementById(reelId);
-  const symbols = [];
-  
-  for (let i = 0; i < 20; i++) {
-    symbols.push(SLOT_SYMBOLS[Math.floor(Math.random() * SLOT_SYMBOLS.length)].icon);
-  }
-  symbols.push(finalSymbol.icon);
-  
-  reel.innerHTML = symbols.map(icon => `<div class="slot-symbol">${icon}</div>`).join('');
-  reel.style.animation = 'none';
-  setTimeout(() => {
-    reel.style.animation = 'spinReel 2s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards';
-  }, 10);
 }
 
 function renderUpgradeInventory() {
@@ -1089,7 +956,6 @@ window.attemptUpgrade = async function() {
     };
     
     playerData.inventory.push(upgradedItem);
-    playerData.upgradesSuccess = (playerData.upgradesSuccess || 0) + 1;
     alert(`✅ SUCCESS! You got a ${newItem.name}!`);
   } else {
     alert('❌ FAILED! Items were destroyed...');
@@ -1100,7 +966,6 @@ window.attemptUpgrade = async function() {
   renderUpgradeInventory();
   calculateUpgradeChance();
   await savePlayerData();
-  checkAchievements();
 }
 
 async function loadLeaderboard() {
@@ -1177,8 +1042,6 @@ window.showStats = function() {
   document.getElementById('stat-streak').textContent = playerData.dailyStreak;
   document.getElementById('stat-inv-value').textContent = invValue.toFixed(2);
   document.getElementById('stat-best-item').textContent = playerData.bestItemWon?.name || 'None';
-  
-  renderAchievements();
 }
 
 window.closeStats = function() {
@@ -1186,78 +1049,31 @@ window.closeStats = function() {
   document.getElementById('stats-modal').style.display = 'none';
 }
 
-window.switchStatTab = function(tab) {
-  playSound('button');
-  document.querySelectorAll('.stat-tab').forEach(btn => btn.classList.remove('active'));
-  event.target.classList.add('active');
-  
-  if (tab === 'stats') {
-    document.getElementById('stats-section').style.display = 'block';
-    document.getElementById('achievements-section').style.display = 'none';
-  } else {
-    document.getElementById('stats-section').style.display = 'none';
-    document.getElementById('achievements-section').style.display = 'block';
-  }
-}
-
-function renderAchievements() {
-  const grid = document.getElementById('achievements-grid');
-  grid.innerHTML = '';
-  
-  ACHIEVEMENTS.forEach(achievement => {
-    const unlocked = playerData.achievements.includes(achievement.id);
-    const card = document.createElement('div');
-    card.className = `achievement-card ${unlocked ? 'unlocked' : 'locked'}`;
-    
-    card.innerHTML = `
-      <div class="achievement-icon-large">${achievement.icon}</div>
-      <div class="achievement-info">
-        <div class="achievement-name">${achievement.name}</div>
-        <div class="achievement-description">${achievement.description}</div>
-      </div>
-      ${unlocked ? '<div class="achievement-check">✓</div>' : ''}
-    `;
-    
-    grid.appendChild(card);
-  });
-}
-
 async function initApp() {
   renderCases();
   renderInventory();
   renderShop();
   renderCraftingGrid();
-  checkAchievements();
 }
 
 supabaseClient.auth.getSession().then(({ data: { session } }) => {
   if (session) {
     supabaseClient.auth.getUser().then(async ({ data: { user } }) => {
-      if (!user) return;
+      const { data: playerInfo } = await supabaseClient
+        .from('player_data')
+        .select('username')
+        .eq('id', user.id)
+        .single();
       
-      try {
-        const { data: playerInfo, error } = await supabaseClient
-          .from('player_data')
-          .select('username')
-          .eq('id', user.id)
-          .single();
-        
-        if (error || !playerInfo) {
-          console.error('Could not load username:', error);
-          return;
-        }
-        
+      if (playerInfo) {
         currentUser = { id: user.id, username: playerInfo.username };
         await loadPlayerData();
         showMainApp();
-      } catch (err) {
-        console.error('Session error:', err);
       }
     });
   }
 });
 
-console.log('🎉 *pats self on back* - You did good, Claude!');
 console.log('💰 Commands: giveMoney(amount), setMoney(amount), resetProgress()');
 
 }
